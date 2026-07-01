@@ -277,8 +277,8 @@ UPDATE_PACKAGE() {
 }
 
 UPDATE_PACKAGE "luci-app-poweroff" "esirplayground/luci-app-poweroff" "main"
-UPDATE_PACKAGE "luci-app-tailscale" "asvow/luci-app-tailscale" "main"
-UPDATE_PACKAGE "openwrt-gecoosac" "ysuolmai/openwrt-gecoosac" "main"
+#UPDATE_PACKAGE "luci-app-tailscale" "asvow/luci-app-tailscale" "main"
+#UPDATE_PACKAGE "openwrt-gecoosac" "ysuolmai/openwrt-gecoosac" "main"
 # gecoosac 上游作者 (kiss19776) 经常覆盖同名 release asset，PKG_HASH 跟不上
 # 把 PKG_HASH:=xxxxx 改成 PKG_HASH:=skip 跳过校验
 if [ -f ./package/openwrt-gecoosac/gecoosac/Makefile ]; then
@@ -302,23 +302,23 @@ UPDATE_PACKAGE "luci-app-netspeedtest" "https://github.com/sbwml/openwrt_pkgs.gi
 UPDATE_PACKAGE "speedtest-cli" "https://github.com/sbwml/openwrt_pkgs.git" "main" "pkg"
 
 UPDATE_PACKAGE "luci-app-adguardhome" "https://github.com/ysuolmai/luci-app-adguardhome.git" "apk"
-UPDATE_PACKAGE "luci-app-tailscale" "asvow/luci-app-tailscale" "main"
+UPDATE_PACKAGE "luci-app-tailscale-communitye" "tokisaki-galaxy/luci-app-tailscale-communitye" "main"
 
 UPDATE_PACKAGE "openwrt-podman" "https://github.com/breeze303/openwrt-podman" "main"
 UPDATE_PACKAGE "luci-app-quickfile" "https://github.com/sbwml/luci-app-quickfile" "main"
 sed -i 's|$(INSTALL_BIN) $(PKG_BUILD_DIR)/quickfile-$(ARCH_PACKAGES) $(1)/usr/bin/quickfile|$(INSTALL_BIN) $(PKG_BUILD_DIR)/quickfile-aarch64_generic $(1)/usr/bin/quickfile|' package/luci-app-quickfile/quickfile/Makefile
 
 # bandix
-UPDATE_PACKAGE "openwrt-bandix" "timsaya/openwrt-bandix" "main"
-UPDATE_PACKAGE "luci-app-bandix" "timsaya/luci-app-bandix" "main"
+#UPDATE_PACKAGE "openwrt-bandix" "timsaya/openwrt-bandix" "main"
+#UPDATE_PACKAGE "luci-app-bandix" "timsaya/luci-app-bandix" "main"
 
 UPDATE_PACKAGE "luci-theme-shadcn" "ysuolmai/luci-theme-shadcn" "main"
-
+UPDATE_PACKAGE "luci-theme-momo" "nikkinikki-org/OpenWrt-momo" "main"
 
 #######################################
 #DIY Settings
 #######################################
-WRT_IP="192.168.1.1"
+WRT_IP="192.168.100.1"
 WRT_NAME="FWRT"
 WRT_WIFI="FWRT"
 
@@ -395,8 +395,8 @@ if [[ "$WRT_CONFIG" == *"WIFI-NO"* ]]; then
 fi
 
 provided_config_lines=(
-    "CONFIG_PACKAGE_luci-app-zerotier=y"
-    "CONFIG_PACKAGE_luci-i18n-zerotier-zh-cn=y"
+    "CONFIG_PACKAGE_luci-app-zerotier=n"
+    "CONFIG_PACKAGE_luci-i18n-zerotier-zh-cn=n"
     "CONFIG_PACKAGE_luci-app-poweroff=y"
     "CONFIG_PACKAGE_luci-i18n-poweroff-zh-cn=y"
     "CONFIG_PACKAGE_cpufreq=y"
@@ -405,8 +405,8 @@ provided_config_lines=(
     "CONFIG_PACKAGE_luci-app-ttyd=y"
     "CONFIG_PACKAGE_luci-i18n-ttyd-zh-cn=y"
     "CONFIG_PACKAGE_ttyd=y"
-    "CONFIG_PACKAGE_luci-app-homeproxy=y"
-    "CONFIG_PACKAGE_luci-i18n-homeproxy-zh-cn=y"
+    "CONFIG_PACKAGE_luci-app-homeproxy=n"
+    "CONFIG_PACKAGE_luci-i18n-homeproxy-zh-cn=n"
     "CONFIG_PACKAGE_ddns-go=y"
     "CONFIG_PACKAGE_luci-app-ddns-go=y"
     "CONFIG_PACKAGE_luci-i18n-ddns-go-zh-cn=y"
@@ -416,7 +416,7 @@ provided_config_lines=(
     "CONFIG_COREMARK_ENABLE_MULTITHREADING=y"
     "CONFIG_COREMARK_NUMBER_OF_THREADS=6"
     "CONFIG_PACKAGE_luci-app-filetransfer=y"
-    "CONFIG_PACKAGE_openssh-sftp-server=y"
+    "CONFIG_PACKAGE_openssh-sftp-server=n"
     "CONFIG_PACKAGE_luci-app-frpc=y"
     "CONFIG_OPKG_USE_CURL=y"
     "CONFIG_PACKAGE_opkg=y"
@@ -425,7 +425,7 @@ provided_config_lines=(
     "CONFIG_PACKAGE_kmod-fs-cifs=y"
     "CONFIG_PACKAGE_cifsmount=y"
 	"CONFIG_PACKAGE_luci-theme-shadcn=y"
-    "CONFIG_PACKAGE_luci-app-openclash=y"
+    "CONFIG_PACKAGE_luci-app-openclash=n"
 )
 
 if [[ $WRT_CONFIG == *"WIFI-NO"* ]]; then
@@ -441,15 +441,15 @@ fi
     "CONFIG_PACKAGE_luci-app-adguardhome=y"
     "CONFIG_PACKAGE_luci-i18n-adguardhome-zh-cn=y"
     "CONFIG_PACKAGE_luci-app-netspeedtest=y"
-    "CONFIG_PACKAGE_luci-app-tailscale=y"
-	"CONFIG_PACKAGE_luci-app-ssr-plus=y"
-	"CONFIG_PACKAGE_shadowsocks-rust=y"
-	"CONFIG_PACKAGE_shadowsocksr-libev=y"
-	"CONFIG_PACKAGE_shadowsocks-libev=y"
-    "CONFIG_PACKAGE_luci-app-gecoosac=y"
-	"CONFIG_PACKAGE_luci-app-passwall=y"
-    "CONFIG_PACKAGE_luci-app-passwall_INCLUDE_Shadowsocks_Libev_Client=y"
-    "CONFIG_PACKAGE_luci-app-passwall_INCLUDE_Shadowsocks_Libev_Server=y"
+    "CONFIG_PACKAGE_luci-app-tailscale-community=y"
+	"CONFIG_PACKAGE_luci-app-ssr-plus=n"
+	"CONFIG_PACKAGE_shadowsocks-rust=n"
+	"CONFIG_PACKAGE_shadowsocksr-libev=n"
+	"CONFIG_PACKAGE_shadowsocks-libev=n"
+    "CONFIG_PACKAGE_luci-app-gecoosac=n"
+	"CONFIG_PACKAGE_luci-app-passwall=n"
+    "CONFIG_PACKAGE_luci-app-passwall_INCLUDE_Shadowsocks_Libev_Client=n"
+    "CONFIG_PACKAGE_luci-app-passwall_INCLUDE_Shadowsocks_Libev_Server=n"
     "CONFIG_PACKAGE_luci-app-passwall_INCLUDE_ShadowsocksR_Libev_Client=n"
     "CONFIG_PACKAGE_luci-app-passwall_INCLUDE_Simple_Obfs=n"
     "CONFIG_PACKAGE_luci-app-passwall_INCLUDE_SingBox=n"
@@ -475,9 +475,9 @@ fi
     "CONFIG_PACKAGE_kmod-nf-nat6=y"
     "CONFIG_PACKAGE_kmod-dummy=y"
     "CONFIG_PACKAGE_kmod-veth=y"
-    "CONFIG_PACKAGE_luci-app-frps=y"
+    "CONFIG_PACKAGE_luci-app-frpc=y"
     "CONFIG_PACKAGE_luci-app-samba4=y"
-    "CONFIG_PACKAGE_libuver-zero=y"
+    "CONFIG_PACKAGE_libuver-zero=n"
     "CONFIG_PACKAGE_kmod-sched-tbf=y"
     "CONFIG_PACKAGE_kmod-sched-htb=y"
     "CONFIG_PACKAGE_tc-full=y"
@@ -485,6 +485,9 @@ fi
 	"CONFIG_PACKAGE_nikki=y"
 	"CONFIG_PACKAGE_luci-app-nikki=y"
 	"CONFIG_PACKAGE_luci-i18n-nikki-zh-cn=y"
+	"CONFIG_PACKAGE_momo=y"
+	"CONFIG_PACKAGE_luci-app-momo=y"
+	"CONFIG_PACKAGE_luci-i18n-momo-zh-cn=y"
 )
 
 [[ $WRT_CONFIG == "IPQ"* ]] && provided_config_lines+=(
