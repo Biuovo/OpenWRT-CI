@@ -77,7 +77,7 @@ jobs:
           sudo -E apt -yqq autoremove --purge
           sudo -E apt -yqq autoclean
           sudo -E apt -yqq clean
-          sudo -E apt -yqq install dos2unix libfuse-dev libunistring libxml2
+          sudo -E apt -yqq install dos2unix libfuse-dev libunistring libxml2 zstd
           sudo bash -c 'bash <(curl -sL https://build-scripts.immortalwrt.org/init_build_environment.sh)'
           sudo -E systemctl daemon-reload
           sudo -E timedatectl set-timezone "Asia/Shanghai"
@@ -209,14 +209,27 @@ jobs:
           cp -f ./.config ./upload/Config-"$WRT_CONFIG"-"$WRT_INFO"-"$WRT_BRANCH"-"$WRT_DATE".txt
 
           if [[ $WRT_TEST != 'true' ]]; then
-            echo "WRT_KVER=$(find ./bin/targets/ -type f -name "*.manifest" -exec grep -oP '^kernel - \K[\d\.]+' {} \;)" >> $GITHUB_ENV
-            echo "WRT_LIST=$(find ./bin/targets/ -type f -name "*.manifest" -exec grep -oP '^luci-(app|theme)[^ ]*' {} \; | tr '\n' ' ')" >> $GITHUB_ENV
+            echo "WRT_KVER=$(find ./bin/targets/ -type f -name "*.manifest" -exec grep -oP '^kernel - \K[\d\.]+' {} \; | head -n 1)" >> $GITHUB_ENV
+            echo "WRT_LIST=$(find ./bin/targets/ -type f -name "*.manifest" -exec grep -oP '^luci-(app|theme)[^ ]*' {} \; | sort -u | tr '\n' ' ')" >> $GITHUB_ENV
+
+            # 打包全量 packages/kmods，方便使用者自建软件源，避免 kmod 依赖无法安装
+            if [ -d ./bin/packages ]; then
+              tar --zstd -cf ./upload/Packages-"$WRT_CONFIG"-"$WRT_INFO"-"$WRT_BRANCH"-"$WRT_DATE".tar.zst -C ./bin packages
+            fi
+            if [ -d ./bin/targets ]; then
+              find ./bin/targets -type d -name packages | while read -r PKG_DIR; do
+                TARGET_DIR="$(dirname "$PKG_DIR")"
+                REL_DIR="${TARGET_DIR#./bin/targets/}"
+                SAFE_DIR="$(echo "$REL_DIR" | tr '/' '-')"
+                tar --zstd -cf ./upload/Kmods-"$WRT_CONFIG"-"$SAFE_DIR"-"$WRT_INFO"-"$WRT_BRANCH"-"$WRT_DATE".tar.zst -C "$TARGET_DIR" packages
+              done
+            fi
 
             find ./bin/targets/ -iregex ".*\(buildinfo\|json\|sha256sums\|packages\)$" -exec rm -rf {} +
 
             for FILE in $(find ./bin/targets/ -type f -iname "*$WRT_TARGET*") ; do
               EXT=$(basename $FILE | cut -d '.' -f 2-)
-              NAME=$(basename $FILE | cut -d '.' -f 1 | grep -io "\($WRT_TARGET\).*")
+              NAME=$(basename $FILE | cut -d '.' -f 1 | grep -io "\($WRT_TARGET\).*" || basename $FILE | cut -d '.' -f 1)
               NEW_FILE="$NAME"-"$WRT_INFO"-"$WRT_BRANCH"-"$WRT_WIFI"-"$WRT_DATE"."$EXT"
               mv -f $FILE ./upload/$NEW_FILE
             done
@@ -232,11 +245,10 @@ jobs:
           tag_name: ${{env.WRT_CONFIG}}-${{env.WRT_INFO}}-${{env.WRT_BRANCH}}-${{env.WRT_DATE}}
           files: ./wrt/upload/*.*
           body: |
-            这是个平台固件包，内含多个设备！
-            请注意选择你需要的设备固件！
-            不要问，刷就完事了！
+            固件内置常用插件并启用全量 kmod 编译。
+            Release 同时附带 Packages-*.tar.zst 与 Kmods-*.tar.zst，方便自建软件源。
 
-            全系带开源硬件加速，别问了！
+            ER1 保留 ImmortalWrt qualcommax 满血 NSS 加速；R76S 自动加入网络亲和性与 packet steering 优化。
 
             源码：${{env.WRT_REPO}}
             分支：${{env.WRT_BRANCH}}
