@@ -22,7 +22,7 @@ Argon + Argon Config、Docker / Dockerman、DiskMan、QuickFile、UPnP、netspee
 R76S 额外包含 RTL8125、rtl8822cs、hci-uart、Rockchip DRM / Panfrost / rkvdec / rocket-rockchip，并单独启用：
 
 - `-O3` 编译优化
-- `-mcpu=cortex-a76.cortex-a55+crypto+crc` ARMv8 指令优化
+- `-mcpu=cortex-a72.cortex-a55+crypto+crc` ARMv8 指令优化
 - ARM CE / NEON crypto kmods
 - `40-net-smp-affinity`
 - sbwml R76S packet steering patch
